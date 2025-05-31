@@ -151,11 +151,11 @@ content = html.Div(
         html.Div([
             html.Hr(),
             html.Div([
-                html.P("Display last (min)", style={"display": "inline-block", "width": "80%"}),
+                html.P("Display last (min)", style={"display": "inline-block"}),
                 dcc.Input(min=1, max=10800, step=1, value=1440, id='display-length-slider', type="number",
-                          style={"display": "inline-block", "width": "20%", "text-align": "right"}),
-                dbc.Switch(id="raw-switch", label="Display raw values", value=True),
-                html.Button('Refresh', id='refresh-button', style={"width": "100%"}, n_clicks=0),
+                          style={"display": "inline-block"}),
+                dbc.Switch(id="raw-switch", label="Display raw values", value=True, style={"display": "inline-block"}),
+                html.Button('Refresh', id='refresh-button', style={"display": "inline-block"}, n_clicks=0),
             ]),
             html.Hr(),
             html.Div([dcc.Graph(id='sensor_0')], style={'display': 'inline-block'}),
