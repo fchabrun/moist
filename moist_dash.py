@@ -141,7 +141,7 @@ def draw_main_grap(time, sensor_values, display_raw):
 
 
 CONTENT_STYLE = {
-    "margin-left": "20rem",
+    "margin-left": "2rem",
     "margin-right": "2rem",
     "padding": "2rem 1rem",
 }
