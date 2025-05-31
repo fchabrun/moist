@@ -99,8 +99,8 @@ def db_store_measurements(measurements):
     if args.db_platform == "mariadb":
         query = "INSERT INTO moist_measurements (time, event" + "".join([f", sensor_{m_val[0]}" for m_val in measurements]) + ") VALUES (?, ?" + "".join([", ?" for m_val in measurements]) + ")"
         query_args = [datetime.now(), 'entry', *[m_val[1] for m_val in measurements]]
-        log(f"Inserting into db with {query=}")
-        log(f"Inserting into db with {query_args=}")
+        # log(f"Inserting into db with {query=}")
+        # log(f"Inserting into db with {query_args=}")
         return run_db_query_mariadb(query, query_args)
     log(f"Unknown {args.db_platform=}")
     return False
