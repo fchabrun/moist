@@ -1,7 +1,7 @@
 import serial
 import time
 
-serial = serial.Serial('/dev/tty0ACM0', 9600)
+serial = serial.Serial('/dev/ttyACM0', 9600)
 
 last_send = time.time()
 
