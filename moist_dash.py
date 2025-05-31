@@ -108,7 +108,7 @@ def remap_value_by_state(val, state):
         return np.nan
 
 
-def draw_main_grap(time, sensor_values, display_raw):
+def draw_main_grap(time, sensor_values, display_raw, fig_name):
     if len(time) == 0:
         return None
     if not np.isfinite(sensor_values).any():
@@ -122,7 +122,7 @@ def draw_main_grap(time, sensor_values, display_raw):
     # Sensor measures
     for state, state_color in zip(["air", "dry", "ok", "wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
         fig.add_trace(
-            go.Scatter(x=time, y=sensor_values.map(lambda val: remap_value_by_state(val, state=state)).fillna(value=sensor_values, limit=1), mode='lines', line=dict(width=1, color=state_color))
+            go.Scatter(x=time, y=sensor_values.copy().map(lambda val: remap_value_by_state(val, state=state)).fillna(value=sensor_values, limit=2), mode='lines', line=dict(width=1, color=state_color))
         )
 
     # Set x-axis title
@@ -135,7 +135,7 @@ def draw_main_grap(time, sensor_values, display_raw):
     # Set y-axes titles
     # fig.update_yaxes(title_text="Humidity (raw)", range=(lower_y_limit, upper_y_limit))
 
-    fig.update_layout(template="plotly_white", margin=dict(t=50, b=50))
+    fig.update_layout(title=dict(text=fig_name), template="plotly_white", margin=dict(t=50, b=50))
 
     return fig
 
@@ -149,7 +149,6 @@ CONTENT_STYLE = {
 content = html.Div(
     [
         html.Div([
-            html.Hr(),
             html.Div([
                 html.P("Display last (min)", style={"display": "inline-block"}),
                 dcc.Input(min=1, max=10800, step=1, value=1440, id='display-length-slider', type="number",
@@ -193,12 +192,12 @@ def callback_update_from_db(param_minutes, n, raw_switch):
     log(f"refreshing with {db_extract_entries.shape=}")
 
     # figs
-    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]], display_raw=raw_switch)
-    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]], display_raw=raw_switch)
-    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]], display_raw=raw_switch)
-    sensor_3_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[3]], display_raw=raw_switch)
-    sensor_4_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[4]], display_raw=raw_switch)
-    sensor_5_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[5]], display_raw=raw_switch)
+    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]], display_raw=raw_switch, fig_name="Sensor 1")
+    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]], display_raw=raw_switch, fig_name="Sensor 2")
+    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]], display_raw=raw_switch, fig_name="Sensor 3")
+    sensor_3_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[3]], display_raw=raw_switch, fig_name="Sensor 4")
+    sensor_4_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[4]], display_raw=raw_switch, fig_name="Sensor 5")
+    sensor_5_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[5]], display_raw=raw_switch, fig_name="Sensor 6")
 
     return (
         sensor_0_fig,
