@@ -122,7 +122,7 @@ def draw_main_grap(time, sensor_values, display_raw):
     # Sensor measures
     for state, state_color in zip(["air", "dry", "ok", "wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
         fig.add_trace(
-            go.Scatter(x=time, y=sensor_values.map(lambda val: remap_value_by_state(val, state=state)), name="Humidity (raw)", mode='markers+lines', line=dict(width=1, color=state_color))
+            go.Scatter(x=time, y=sensor_values.map(lambda val: remap_value_by_state(val, state=state)).ffill(limit=1, inplace=True), name="Humidity (raw)", mode='lines', line=dict(width=1, color=state_color))
         )
 
     # Set x-axis title
