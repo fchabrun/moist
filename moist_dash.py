@@ -114,7 +114,7 @@ def draw_main_grap(time, sensor_values, display_raw):
 
     # Sensor measures
     fig.add_trace(
-        go.Scatter(x=time, y=sensor_values, name="Humidity (raw)", line=dict(color='blue'), marker_color=mapped_colors)
+        go.Scatter(x=time, y=sensor_values, name="Humidity (raw)", marker_color=mapped_colors)
     )
 
     # Set x-axis title
