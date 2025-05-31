@@ -69,7 +69,7 @@ def fetch_db(minutes):
     if output_data is not None:
         output_data.time = pd.to_datetime(output_data.time)
         sensor_columns = [col for col in output_data.columns.tolist() if col[:7] == "sensor_"]
-        output_data = output_data.astype({col: int for col in sensor_columns})
+        output_data = output_data.astype({col: float for col in sensor_columns})
     else:
         print(f"unable to retrieve db data: unknown {args.db_platform}")
     return output_data, sensor_columns
