@@ -13,7 +13,7 @@ if __name__ == "__main__":
     # output
     if (not awaiting_reply) and (time.time() - last_send > 1):
       last_send = time.time()
-      serial_com.print(b'1')
+      serial_com.write(b'1')
       awaiting_reply = True
     # input
     if serial_com.in_waiting > 0:
