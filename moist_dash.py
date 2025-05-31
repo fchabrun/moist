@@ -158,12 +158,12 @@ content = html.Div(
                 html.Button('Refresh', id='refresh-button', style={"width": "100%"}, n_clicks=0),
             ]),
             html.Hr(),
-            html.Div([dcc.Graph(id='sensor_0')]),
-            html.Div([dcc.Graph(id='sensor_1')]),
-            html.Div([dcc.Graph(id='sensor_2')]),
-            html.Div([dcc.Graph(id='sensor_3')]),
-            html.Div([dcc.Graph(id='sensor_4')]),
-            html.Div([dcc.Graph(id='sensor_5')]),
+            html.Div([dcc.Graph(id='sensor_0')], style={'display': 'inline-block'}),
+            html.Div([dcc.Graph(id='sensor_1')], style={'display': 'inline-block'}),
+            html.Div([dcc.Graph(id='sensor_2')], style={'display': 'inline-block'}),
+            html.Div([dcc.Graph(id='sensor_3')], style={'display': 'inline-block'}),
+            html.Div([dcc.Graph(id='sensor_4')], style={'display': 'inline-block'}),
+            html.Div([dcc.Graph(id='sensor_5')], style={'display': 'inline-block'}),
         ], id='page-div', style={'width': '100%', 'display': 'block'}),
     ], id="page-content", style=CONTENT_STYLE
 )
