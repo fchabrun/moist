@@ -97,7 +97,7 @@ def clear_db():
 
 def db_store_measurements(measurements):
     if args.db_platform == "mariadb":
-        query = "INSERT INTO moist_measurements (time, event" + "".join([f", sensor_{m_val[0]}" for m_val in measurements]) + ") VALUES (?, ?" + "".join(["?" for m_val in measurements]) + ")"
+        query = "INSERT INTO moist_measurements (time, event" + "".join([f", sensor_{m_val[0]}" for m_val in measurements]) + ") VALUES (?, ?" + "".join([", ?" for m_val in measurements]) + ")"
         query_args = [datetime.now(), 'entry', *[m_val[1] for m_val in measurements]]
         log(f"Inserting into db with {query=}")
         log(f"Inserting into db with {query_args=}")
@@ -203,7 +203,7 @@ if __name__ == "__main__":
             measurements = []
             for reading in readings:
                 reading_sensor, reading_measure = reading.split(":")
-                measurements.append([reading_sensor, reading_measure])
+                measurements.append([int(reading_sensor), int(reading_measure)])
     
             # store new temperature measurements
             query_status = db_store_measurements(measurements)
