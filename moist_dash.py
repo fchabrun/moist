@@ -89,31 +89,21 @@ def get_db_subset(db_extract: pd.DataFrame, events: list = ("entry", )):
 app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 
-def sensor_value_to_state(val):
-    if val > LIMIT_AIR:
-        return "air"
-    if val > LIMIT_DRY:
-        return "dry"
-    if val > LIMIT_WET:
-        return "ok"
-    return "wet"  # wet
-
-
 def remap_value_by_state(val, state):
     if state == "air":
-        if val > LIMIT_AIR
+        if val > LIMIT_AIR:
             return val
         return np.nan
     if state == "dry":
-        if (val > LIMIT_DRY) and (val <= LIMIT_AIR)
+        if (val > LIMIT_DRY) and (val <= LIMIT_AIR):
             return val
         return np.nan
     if state == "ok":
-        if (val > LIMIT_WET) and (val <= LIMIT_DRY)
+        if (val > LIMIT_WET) and (val <= LIMIT_DRY):
             return val
         return np.nan
     if state == "wet":
-        if val <= LIMIT_WET
+        if val <= LIMIT_WET:
             return val
         return np.nan
     
