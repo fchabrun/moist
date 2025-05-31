@@ -99,6 +99,26 @@ def sensor_value_to_state(val):
     return "wet"  # wet
 
 
+def remap_value_by_state(val, state):
+    if state == "air":
+        if val > LIMIT_AIR
+            return val
+        return np.nan
+    if state == "dry":
+        if (val > LIMIT_DRY) and (val <= LIMIT_AIR)
+            return val
+        return np.nan
+    if state == "ok":
+        if (val > LIMIT_WET) and (val <= LIMIT_DRY)
+            return val
+        return np.nan
+    if state == "wet":
+        if val <= LIMIT_WET
+            return val
+        return np.nan
+    
+
+
 def draw_main_grap(time, sensor_values, display_raw):
     if len(time) == 0:
         return None
@@ -110,24 +130,10 @@ def draw_main_grap(time, sensor_values, display_raw):
     if display_raw:
         pass
 
-    mapped_states = sensor_values.map(sensor_value_to_state)
-
     # Sensor measures
-    if (mapped_states == "air").any():
+    for state, state_color in zip(["air", "dry", "ok", "wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
         fig.add_trace(
-            go.Scatter(x=time[mapped_states == "air"], y=sensor_values[mapped_states == "air"], name="Humidity (raw)", mode='lines', line=dict(width=.5, color='#cccccc'))
-        )
-    if (mapped_states == "dry").any():
-        fig.add_trace(
-            go.Scatter(x=time[mapped_states == "dry"], y=sensor_values[mapped_states == "dry"], name="Humidity (raw)", mode='lines', line=dict(width=.5, color='#ff0000'))
-        )
-    if (mapped_states == "ok").any():
-        fig.add_trace(
-            go.Scatter(x=time[mapped_states == "ok"], y=sensor_values[mapped_states == "ok"], name="Humidity (raw)", mode='lines', line=dict(width=.5, color='#00ff00'))
-        )
-    if (mapped_states == "wet").any():
-        fig.add_trace(
-            go.Scatter(x=time[mapped_states == "wet"], y=sensor_values[mapped_states == "wet"], name="Humidity (raw)", mode='lines', line=dict(width=.5, color='#0000ff'))
+            go.Scatter(x=time, y=sensor_values.map(remap_value_by_state), name="Humidity (raw)", mode='lines', line=dict(width=1, color=state_color))
         )
 
     # Set x-axis title
