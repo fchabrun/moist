@@ -174,6 +174,7 @@ def callback_update_from_db(param_minutes, n, raw_switch):
     # extract db
     db_extract = fetch_db(param_minutes)
     db_extract_entries = get_db_subset(db_extract=db_extract, events=["entry",])
+    log(f"refreshing with {db_extract_entries.shape=}")
 
     # figs
     sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries.sensor_0)
