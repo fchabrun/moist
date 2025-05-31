@@ -3,7 +3,7 @@ import time
 
 serial_com = serial.Serial('/dev/ttyACM0', 9600)
 
-last_send = time.time()
+last_send = -1
 
 while True:
   serial_com.flushInput()
