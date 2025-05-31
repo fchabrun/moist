@@ -87,6 +87,8 @@ app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 def draw_main_grap(time, sensor_values, display_raw):
     if len(time) == 0:
         return None
+    if not np.isfinite(sensor_values).any():
+        return None
 
     fig = make_subplots()
 
