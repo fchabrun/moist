@@ -16,7 +16,6 @@ parser.add_argument("--host")
 parser.add_argument("--port")
 parser.add_argument("--dash_ip", default="192.168.1.38")
 parser.add_argument("--rundir", default="/home/moist/moist_rundir")
-parser.add_argument("--auto_debug", default=True)
 parser.add_argument("--db_platform", default="mariadb")
 parser.add_argument("--db_host", default="localhost")
 parser.add_argument("--db_port", default=3306)
@@ -35,11 +34,6 @@ def now():
 def log(s):
     print(f"{now()}    {s}")
 
-
-if args.auto_debug and not os.path.exists(args.rundir):
-    args.dash_ip = "127.0.0.1"
-    # args.rundir = r"C:\Users\flori\OneDrive - univ-angers.fr\Documents\Home\Research\Common"
-    args.rundir = r"C:\Users\flori\OneDrive\Documents\moist_moist"
 
 if args.db_platform == "mariadb":
     from sqlalchemy import create_engine
