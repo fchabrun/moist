@@ -2,6 +2,7 @@ import json
 import os
 import time
 import argparse
+import serial
 from datetime import datetime
 
 parser = argparse.ArgumentParser()
