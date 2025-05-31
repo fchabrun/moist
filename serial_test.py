@@ -10,8 +10,8 @@ while True:
   serial_com.flushOutput()
   # output
   if time.time() - last_send > 1:
-    serial_com = time.time()
-    serial.print(b'1')
+    last_send = time.time()
+    serial_com.print(b'1')
   # input
   rcom = serial_com.read()
   print(f"Received: <{rcom}>")
