@@ -167,14 +167,14 @@ app.layout = html.Div(
 )
 def callback_update_from_db(param_minutes, n, raw_switch):
     # extract db
-    db_extract = fetch_db(param_minutes)
+    db_extract, sensor_columns = fetch_db(param_minutes)
     db_extract_entries = get_db_subset(db_extract=db_extract, events=["entry",])
     log(f"refreshing with {db_extract_entries.shape=}")
 
     # figs
-    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries.sensor_0)
-    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries.sensor_1)
-    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries.sensor_2)
+    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]])
+    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]])
+    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]])
     sensor_3_fig = None
     sensor_4_fig = None
     sensor_5_fig = None
