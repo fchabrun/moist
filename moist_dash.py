@@ -11,6 +11,8 @@ import time
 import json
 
 # TODO works only for 6 figures right now
+# TODO display as squares
+# TODO be able to name plants (sensors)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mode")
