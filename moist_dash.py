@@ -89,14 +89,14 @@ def get_db_subset(db_extract: pd.DataFrame, events: list = ("entry", )):
 app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 
-def sensor_value_to_color(val):
+def sensor_value_to_state(val):
     if val > LIMIT_AIR:
-        return "#cccccc"
+        return "air"
     if val > LIMIT_DRY:
-        return "#ff0000"
+        return "dry"
     if val > LIMIT_WET:
-        return "#ff00ff"
-    return "#0000ff"  # wet
+        return "ok"
+    return "wet"  # wet
 
 
 def draw_main_grap(time, sensor_values, display_raw):
@@ -110,12 +110,25 @@ def draw_main_grap(time, sensor_values, display_raw):
     if display_raw:
         pass
 
-    mapped_colors = sensor_values.map(sensor_value_to_color)
+    mapped_states = sensor_values.map(sensor_value_to_state)
 
     # Sensor measures
-    fig.add_trace(
-        go.Scatter(x=time, y=sensor_values, name="Humidity (raw)", marker_color=mapped_colors)
-    )
+    if (mapped_states == "air").any():
+        fig.add_trace(
+            go.Scatter(x=time[mapped_states == "air"], y=sensor_values[mapped_states == "air"], name="Humidity (raw)", mode='lines', line=dict(width=.5, color='#cccccc'))
+        )
+    if (mapped_states == "dry").any():
+        fig.add_trace(
+            go.Scatter(x=time[mapped_states == "dry"], y=sensor_values[mapped_states == "dry"], name="Humidity (raw)", mode='lines', line=dict(width=.5, color='#ff0000'))
+        )
+    if (mapped_states == "ok").any():
+        fig.add_trace(
+            go.Scatter(x=time[mapped_states == "ok"], y=sensor_values[mapped_states == "ok"], name="Humidity (raw)", mode='lines', line=dict(width=.5, color='#00ff00'))
+        )
+    if (mapped_states == "wet").any():
+        fig.add_trace(
+            go.Scatter(x=time[mapped_states == "wet"], y=sensor_values[mapped_states == "wet"], name="Humidity (raw)", mode='lines', line=dict(width=.5, color='#0000ff'))
+        )
 
     # Set x-axis title
     fig.update_xaxes(title_text="Time")
