@@ -88,16 +88,16 @@ def draw_main_grap(time, sensor_values):
 
     fig = make_subplots()
 
-    limithi = 360
-    limitlo = 277
+    # limithi = 360
+    # limitlo = 277
 
     # Limits
-    fig.add_trace(
-        go.Scatter(x=time, y=limithi, name="Upper limit", line=dict(width=0.5, color='green'))
-    )
-    fig.add_trace(
-        go.Scatter(x=time, y=limitlo, name="Lower limit", line=dict(width=0.5, color='green'), fill='tonexty')
-    )
+    # fig.add_trace(
+    #     go.Scatter(x=time, y=limithi, name="Upper limit", line=dict(width=0.5, color='green'))
+    # )
+    # fig.add_trace(
+    #     go.Scatter(x=time, y=limitlo, name="Lower limit", line=dict(width=0.5, color='green'), fill='tonexty')
+    # )
 
     # Sensor measures
     fig.add_trace(
@@ -108,11 +108,11 @@ def draw_main_grap(time, sensor_values):
     fig.update_xaxes(title_text="Time")
 
     # get first y axis range
-    upper_x_limit = max(max(sensor_values), limithi) + 1
-    lower_x_limit = min(min(sensor_values), limitlo) - 1
+    # upper_x_limit = max(max(sensor_values), limithi) + 1
+    # lower_x_limit = min(min(sensor_values), limitlo) - 1
 
     # Set y-axes titles
-    fig.update_yaxes(title_text="Humidity (raw)", range=(lower_temp_limit, upper_temp_limit))
+    # fig.update_yaxes(title_text="Humidity (raw)", range=(lower_temp_limit, upper_temp_limit))
 
     fig.update_layout(template="plotly_white", margin=dict(t=50, b=50))
 
@@ -133,11 +133,7 @@ content = html.Div(
                 html.P("Display last (min)", style={"display": "inline-block", "width": "80%"}),
                 dcc.Input(min=1, max=1440, step=1, value=60, id='display-length-slider', type="number",
                           style={"display": "inline-block", "width": "20%", "text-align": "right"}),
-                dbc.Switch(
-                    id="raw-switch",
-                    label="Display raw values",
-                    value=False,
-                ),
+                dbc.Switch(id="raw-switch", label="Display raw values", value=False),
                 html.Button('Refresh', id='refresh-button', style={"width": "100%"}, n_clicks=0),
             ]),
             html.Hr(),
@@ -159,7 +155,6 @@ app.layout = html.Div(
 
 
 @callback(
-    Output('current-backend-status', 'children'),
     Output('sensor_0', 'figure'),
     Output('sensor_1', 'figure'),
     Output('sensor_2', 'figure'),
