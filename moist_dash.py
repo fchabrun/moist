@@ -98,10 +98,10 @@ def draw_main_grap(time, sensor_values, display_raw):
 
     # Limits
     fig.add_trace(
-        go.Scatter(x=time, y=limithi, name="Upper limit", line=dict(width=0.5, color='green'))
+        go.Scatter(x=time, y=[limithi, ] * len(time), name="Upper limit", line=dict(width=0.5, color='green'))
     )
     fig.add_trace(
-        go.Scatter(x=time, y=limitlo, name="Lower limit", line=dict(width=0.5, color='green'), fill='tonexty')
+        go.Scatter(x=time, y=[limitlo, ] * len(time), name="Lower limit", line=dict(width=0.5, color='green'), fill='tonexty')
     )
 
     # Sensor measures
