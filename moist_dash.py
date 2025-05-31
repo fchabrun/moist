@@ -136,7 +136,6 @@ CONTENT_STYLE = {
 content = html.Div(
     [
         html.Div([
-            html.H2(id="current-backend-status", className="lead"),
             html.Hr(),
             html.Div([
                 html.P("Display last (min)", style={"display": "inline-block", "width": "80%"}),
@@ -188,9 +187,9 @@ def callback_update_from_db(param_minutes, n, raw_switch):
     sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries.sensor_0)
     sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries.sensor_1)
     sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries.sensor_2)
-    sensor_3_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries.sensor_3)
-    sensor_4_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries.sensor_4)
-    sensor_5_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries.sensor_5)
+    sensor_3_fig = None
+    sensor_4_fig = None
+    sensor_5_fig = None
 
     return (
         sensor_0_fig,
