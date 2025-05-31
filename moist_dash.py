@@ -28,6 +28,9 @@ parser.add_argument("--db_password", default="moisture")
 parser.add_argument("--db_database", default="moist")
 args = parser.parse_args()
 
+LIMIT_AIR = 520
+LIMIT_DRY = 360
+LIMIT_WET = 277
 
 def now():
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -86,6 +89,16 @@ def get_db_subset(db_extract: pd.DataFrame, events: list = ("entry", )):
 app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 
+def sensor_value_to_color(val):
+    if val > LIMIT_AIR:
+        return "#cccccc"
+    if val > LIMIT_DRY:
+        return "#ff0000"
+    if val > LIMIT_WET:
+        return "#ff00ff"
+    return "#0000ff"  # wet
+
+
 def draw_main_grap(time, sensor_values, display_raw):
     if len(time) == 0:
         return None
@@ -95,35 +108,24 @@ def draw_main_grap(time, sensor_values, display_raw):
     fig = make_subplots()
 
     if display_raw:
-        targethi = 360
-        targetlo = 277
-        limithi = 1024
-        limitlo = 0
-    else:
-        assert False, "display_raw=False unhandled yet"
+        pass
 
-    # Limits
-    fig.add_trace(
-        go.Scatter(x=time, y=[targethi, ] * len(time), name="Upper limit", line=dict(width=0.5, color='#cffdbc'))
-    )
-    fig.add_trace(
-        go.Scatter(x=time, y=[targetlo, ] * len(time), name="Lower limit", line=dict(width=0.5, color='#cffdbc'), fill='tonexty')
-    )
+    mapped_colors = sensor_values.map(sensor_value_to_color)
 
     # Sensor measures
     fig.add_trace(
-        go.Scatter(x=time, y=sensor_values, name="Humidity (raw)", line=dict(color='blue'))
+        go.Scatter(x=time, y=sensor_values, name="Humidity (raw)", line=dict(color='blue'), marker_color=mapped_colors)
     )
 
     # Set x-axis title
     fig.update_xaxes(title_text="Time")
 
     # get first y axis range
-    upper_y_limit = max(max(sensor_values), max(targethi, limithi)) + 1
-    lower_y_limit = min(min(sensor_values), min(targetlo, limitlo)) - 1
+    upper_y_limit = max(sensor_values)
+    lower_y_limit = min(sensor_values)
 
     # Set y-axes titles
-    fig.update_yaxes(title_text="Humidity (raw)", range=(lower_y_limit, upper_y_limit))
+    # fig.update_yaxes(title_text="Humidity (raw)", range=(lower_y_limit, upper_y_limit))
 
     fig.update_layout(template="plotly_white", margin=dict(t=50, b=50))
 
