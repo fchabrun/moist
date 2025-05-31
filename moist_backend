@@ -2,8 +2,6 @@ import json
 import os
 import time
 import argparse
-import sys
-import socket
 from datetime import datetime
 
 parser = argparse.ArgumentParser()
@@ -43,8 +41,6 @@ log(f"running at {args.rundir}")
 if args.db_platform == "mariadb":
     log("running with mariadb")
     import mariadb
-
-root_dir = os.path.split(sys.argv[0])[0]
 
 
 def run_db_query_mariadb(query, query_args=None):
