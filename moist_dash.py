@@ -91,17 +91,19 @@ def draw_main_grap(time, sensor_values, display_raw):
     fig = make_subplots()
 
     if display_raw:
-        limithi = 360
-        limitlo = 277
+        targethi = 360
+        targetlo = 277
+        limithi = 1024
+        limitlo = 0
     else:
         assert False, "display_raw=False unhandled yet"
 
     # Limits
     fig.add_trace(
-        go.Scatter(x=time, y=[limithi, ] * len(time), name="Upper limit", line=dict(width=0.5, color='green'))
+        go.Scatter(x=time, y=[targethi, ] * len(time), name="Upper limit", line=dict(width=0.5, color='#cffdbc'))
     )
     fig.add_trace(
-        go.Scatter(x=time, y=[limitlo, ] * len(time), name="Lower limit", line=dict(width=0.5, color='green'), fill='tonexty')
+        go.Scatter(x=time, y=[targetlo, ] * len(time), name="Lower limit", line=dict(width=0.5, color='#cffdbc'), fill='tonexty')
     )
 
     # Sensor measures
@@ -113,8 +115,8 @@ def draw_main_grap(time, sensor_values, display_raw):
     fig.update_xaxes(title_text="Time")
 
     # get first y axis range
-    upper_y_limit = max(max(sensor_values), limithi) + 1
-    lower_y_limit = min(min(sensor_values), limitlo) - 1
+    upper_y_limit = max(max(sensor_values), max(targethi, limithi)) + 1
+    lower_y_limit = min(min(sensor_values), min(targetlo, limitlo)) - 1
 
     # Set y-axes titles
     fig.update_yaxes(title_text="Humidity (raw)", range=(lower_y_limit, upper_y_limit))
