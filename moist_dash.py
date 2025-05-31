@@ -24,8 +24,6 @@ parser.add_argument("--db_password", default="moisture")
 parser.add_argument("--db_database", default="moist")
 args = parser.parse_args()
 
-args.auto_debug = args.auto_debug is not None
-
 
 def now():
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
