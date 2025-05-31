@@ -10,6 +10,8 @@ import numpy as np
 import time
 import json
 
+# TODO works only for 6 figures right now
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--mode")
 parser.add_argument("--host")
@@ -82,22 +84,25 @@ def get_db_subset(db_extract: pd.DataFrame, events: list = ("entry", )):
 app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 
-def draw_main_grap(time, sensor_values):
+def draw_main_grap(time, sensor_values, display_raw):
     if len(time) == 0:
         return None
 
     fig = make_subplots()
 
-    # limithi = 360
-    # limitlo = 277
+    if display_raw:
+        limithi = 360
+        limitlo = 277
+    else:
+        assert False, "display_raw=False unhandled yet"
 
     # Limits
-    # fig.add_trace(
-    #     go.Scatter(x=time, y=limithi, name="Upper limit", line=dict(width=0.5, color='green'))
-    # )
-    # fig.add_trace(
-    #     go.Scatter(x=time, y=limitlo, name="Lower limit", line=dict(width=0.5, color='green'), fill='tonexty')
-    # )
+    fig.add_trace(
+        go.Scatter(x=time, y=limithi, name="Upper limit", line=dict(width=0.5, color='green'))
+    )
+    fig.add_trace(
+        go.Scatter(x=time, y=limitlo, name="Lower limit", line=dict(width=0.5, color='green'), fill='tonexty')
+    )
 
     # Sensor measures
     fig.add_trace(
@@ -108,11 +113,11 @@ def draw_main_grap(time, sensor_values):
     fig.update_xaxes(title_text="Time")
 
     # get first y axis range
-    # upper_x_limit = max(max(sensor_values), limithi) + 1
-    # lower_x_limit = min(min(sensor_values), limitlo) - 1
+    upper_x_limit = max(max(sensor_values), limithi) + 1
+    lower_x_limit = min(min(sensor_values), limitlo) - 1
 
     # Set y-axes titles
-    # fig.update_yaxes(title_text="Humidity (raw)", range=(lower_temp_limit, upper_temp_limit))
+    fig.update_yaxes(title_text="Humidity (raw)", range=(lower_temp_limit, upper_temp_limit))
 
     fig.update_layout(template="plotly_white", margin=dict(t=50, b=50))
 
@@ -133,7 +138,7 @@ content = html.Div(
                 html.P("Display last (min)", style={"display": "inline-block", "width": "80%"}),
                 dcc.Input(min=1, max=1440, step=1, value=60, id='display-length-slider', type="number",
                           style={"display": "inline-block", "width": "20%", "text-align": "right"}),
-                dbc.Switch(id="raw-switch", label="Display raw values", value=False),
+                dbc.Switch(id="raw-switch", label="Display raw values", value=True),
                 html.Button('Refresh', id='refresh-button', style={"width": "100%"}, n_clicks=0),
             ]),
             html.Hr(),
@@ -172,12 +177,12 @@ def callback_update_from_db(param_minutes, n, raw_switch):
     log(f"refreshing with {db_extract_entries.shape=}")
 
     # figs
-    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]])
-    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]])
-    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]])
-    sensor_3_fig = None
-    sensor_4_fig = None
-    sensor_5_fig = None
+    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]], display_raw=raw_switch)
+    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]], display_raw=raw_switch)
+    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]], display_raw=raw_switch)
+    sensor_3_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[3]], display_raw=raw_switch)
+    sensor_4_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[4]], display_raw=raw_switch)
+    sensor_5_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[5]], display_raw=raw_switch)
 
     return (
         sensor_0_fig,
