@@ -113,11 +113,11 @@ def draw_main_grap(time, sensor_values, display_raw):
     fig.update_xaxes(title_text="Time")
 
     # get first y axis range
-    upper_x_limit = max(max(sensor_values), limithi) + 1
-    lower_x_limit = min(min(sensor_values), limitlo) - 1
+    upper_y_limit = max(max(sensor_values), limithi) + 1
+    lower_y_limit = min(min(sensor_values), limitlo) - 1
 
     # Set y-axes titles
-    fig.update_yaxes(title_text="Humidity (raw)", range=(lower_temp_limit, upper_temp_limit))
+    fig.update_yaxes(title_text="Humidity (raw)", range=(lower_y_limit, upper_y_limit))
 
     fig.update_layout(template="plotly_white", margin=dict(t=50, b=50))
 
