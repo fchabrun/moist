@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 def remap_value_by_state(val, state):
     if state == ">3":
