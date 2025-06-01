@@ -108,7 +108,7 @@ def remap_value_by_state(val, state):
         return np.nan
 
 
-def draw_main_grap(time, sensor_values, display_raw, fig_name):
+def draw_main_grap(time, sensor_values, display_raw, smooth, fig_name):
     if len(time) == 0:
         return None
     if not np.isfinite(sensor_values).any():
@@ -118,6 +118,9 @@ def draw_main_grap(time, sensor_values, display_raw, fig_name):
 
     if display_raw:
         pass
+
+    if smooth:
+        sensor_values = pd.stats.moments.ewma(sensor_values)
 
     # Sensor measures
     for state, state_color in zip(["Air", "Too dry", "OK", "Too wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
@@ -156,6 +159,7 @@ content = html.Div(
                 dcc.Input(min=1, max=10800, step=1, value=1440, id='display-length-slider', type="number",
                           style={"display": "inline-block"}),
                 dbc.Switch(id="raw-switch", label="Display raw values", value=True, style={"display": "inline-block"}),
+                dbc.Switch(id="smooth-switch", label="Smooth values", value=True, style={"display": "inline-block"}),
                 html.Button('Refresh', id='refresh-button', style={"display": "inline-block"}, n_clicks=0),
             ]),
             html.Hr(),
@@ -186,20 +190,21 @@ app.layout = html.Div(
     Input('display-length-slider', 'value'),
     Input('refresh-button', 'n_clicks'),
     Input('raw-switch', 'value'),
+    Input('smooth-switch', 'value'),
 )
-def callback_update_from_db(param_minutes, n, raw_switch):
+def callback_update_from_db(param_minutes, n, raw_switch, smooth_switch):
     # extract db
     db_extract, sensor_columns = fetch_db(param_minutes)
     db_extract_entries = get_db_subset(db_extract=db_extract, events=["entry",])
     log(f"refreshing with {db_extract_entries.shape=}")
 
     # figs
-    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]], display_raw=raw_switch, fig_name="Sensor 1")
-    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]], display_raw=raw_switch, fig_name="Sensor 2")
-    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]], display_raw=raw_switch, fig_name="Sensor 3")
-    sensor_3_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[3]], display_raw=raw_switch, fig_name="Sensor 4")
-    sensor_4_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[4]], display_raw=raw_switch, fig_name="Sensor 5")
-    sensor_5_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[5]], display_raw=raw_switch, fig_name="Sensor 6")
+    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 1")
+    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 2")
+    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 3")
+    sensor_3_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[3]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 4")
+    sensor_4_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[4]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 5")
+    sensor_5_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[5]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 6")
 
     return (
         sensor_0_fig,
