@@ -28,9 +28,11 @@ parser.add_argument("--db_password", default="moisture")
 parser.add_argument("--db_database", default="moist")
 args = parser.parse_args()
 
+LIMIT_HIGH = 580
 LIMIT_AIR = 520
 LIMIT_DRY = 360
 LIMIT_WET = 277
+LIMIT_LOW = 220
 
 def now():
     return datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -116,9 +118,6 @@ def draw_main_grap(time, sensor_values, display_raw, smooth, fig_name):
 
     fig = make_subplots()
 
-    if display_raw:
-        pass
-
     if smooth:
         sensor_values = sensor_values.ewm(span=12).mean()
 
@@ -126,6 +125,11 @@ def draw_main_grap(time, sensor_values, display_raw, smooth, fig_name):
     for state, state_color in zip(["Air", "Too dry", "OK", "Too wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
         sensor_values_remapped = sensor_values.map(lambda val: remap_value_by_state(val, state=state))
         sensor_values_remapped[sensor_values_remapped.isna() & (~sensor_values_remapped.shift().isna())] = sensor_values[sensor_values_remapped.isna() & (~sensor_values_remapped.shift().isna())]
+        if not display_raw:
+            sensor_values_remapped = sensor_values_remapped.copy()
+            sensor_values_remapped[sensor_values_remapped > LIMIT_HIGH] = LIMIT_HIGH
+            sensor_values_remapped[sensor_values_remapped < LIMIT_LOW] = LIMIT_LOW
+            sensor_values_remapped = 100 * (LIMIT_HIGH - sensor_values_remapped) / (LIMIT_HIGH - LIMIT_LOW)
         fig.add_trace(
             go.Scatter(x=time, y=sensor_values_remapped, name=state, mode='lines', line=dict(width=1, color=state_color))
         )
