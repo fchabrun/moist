@@ -90,19 +90,19 @@ app = Dash(external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 
 def remap_value_by_state(val, state):
-    if state == "air":
+    if state == "Air":
         if val > LIMIT_AIR:
             return val
         return np.nan
-    if state == "dry":
+    if state == "Too dry":
         if (val > LIMIT_DRY) and (val <= LIMIT_AIR):
             return val
         return np.nan
-    if state == "ok":
+    if state == "OK":
         if (val > LIMIT_WET) and (val <= LIMIT_DRY):
             return val
         return np.nan
-    if state == "wet":
+    if state == "Too wet":
         if val <= LIMIT_WET:
             return val
         return np.nan
@@ -120,9 +120,9 @@ def draw_main_grap(time, sensor_values, display_raw, fig_name):
         pass
 
     # Sensor measures
-    for state, state_color in zip(["air", "dry", "ok", "wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
+    for state, state_color in zip(["Air", "Too dry", "OK", "Too wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
         fig.add_trace(
-            go.Scatter(x=time, y=sensor_values.copy().map(lambda val: remap_value_by_state(val, state=state)).fillna(value=sensor_values, limit=2), mode='lines', line=dict(width=1, color=state_color))
+            go.Scatter(x=time, y=sensor_values.map(lambda val: remap_value_by_state(val, state=state)).fillna(value=sensor_values, limit=1), name=state_color, mode='lines', line=dict(width=1, color=state_color))
         )
 
     # Set x-axis title
