@@ -121,8 +121,10 @@ def draw_main_grap(time, sensor_values, display_raw, fig_name):
 
     # Sensor measures
     for state, state_color in zip(["Air", "Too dry", "OK", "Too wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
+        sensor_values_remapped = sensor_values.map(lambda val: remap_value_by_state(val, state=state))
+        sensor_values_remapped[sensor_values_remapped.isna() & (~sensor_values_remapped.shift().isna())] = sensor_values[sensor_values_remapped.isna() & (~sensor_values_remapped.shift().isna())]
         fig.add_trace(
-            go.Scatter(x=time, y=sensor_values.map(lambda val: remap_value_by_state(val, state=state)).fillna(value=sensor_values, limit=1), name=state, mode='lines', line=dict(width=1, color=state_color))
+            go.Scatter(x=time, y=sensor_values_remapped, name=state, mode='lines', line=dict(width=1, color=state_color))
         )
 
     # Set x-axis title
