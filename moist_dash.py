@@ -120,7 +120,7 @@ def draw_main_grap(time, sensor_values, display_raw, smooth, fig_name):
         pass
 
     if smooth:
-        sensor_values = sensor_values.ewm(com=.5).mean()
+        sensor_values = sensor_values.ewm(span=12).mean()
 
     # Sensor measures
     for state, state_color in zip(["Air", "Too dry", "OK", "Too wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
