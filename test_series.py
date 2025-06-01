@@ -17,3 +17,4 @@ test_remapped = test.map(lambda val: remap_value_by_state(val, state='<=3'))
 print(f"{test_remapped=}")
 test_remapped[test_remapped.isna() & (~test_remapped.shift().isna())] = test[test_remapped.isna() & (~test_remapped.shift().isna())]
 print(f"{test_remapped=}")
+print(f'{test=}')
