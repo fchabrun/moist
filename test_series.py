@@ -12,11 +12,8 @@ def remap_value_by_state(val, state):
         return np.nan
 
 test = pd.Series([1., 2, 3, 2, 1, 3, 6, 1, 2, 1, 3, 4, 5, 7, 9, 5, 11, 6, 2, 7, 4, 2, 1, 2, 3], name="sensor_0")
-
 print(f'{test=}')
-
-print(f"{test.map(lambda val: remap_value_by_state(val, state='>3'))=}")
-print(f"{test.map(lambda val: remap_value_by_state(val, state='<=3'))=}")
-
-print(f"{test.map(lambda val: remap_value_by_state(val, state='>3')).fillna(value=test, limit=1)=}")
-print(f"{test.map(lambda val: remap_value_by_state(val, state='<=3')).fillna(value=test, limit=1)=}")
+test_remapped = test.map(lambda val: remap_value_by_state(val, state='<=3'))
+print(f"{test_remapped=}")
+test_remapped[test_remapped.isna() & (~test_remapped.shift().isna())] = test[test_remapped.isna() & (~test_remapped.shift().isna())]
+print(f"{test_remapped=}")
