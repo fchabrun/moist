@@ -125,10 +125,10 @@ def draw_main_grap(time, sensor_values, smooth_alpha, nvalues_value, fig_name):
     if nvalues_value < len(sensor_values):
         # to interpolate we first need to convert times to raw seconds
         time_in_seconds = (time - time.max()) / timedelta(seconds=1)
-        sensor_values = np.interp(
+        sensor_values_np = np.interp(
             x=np.linspace(time_in_seconds.min(), time_in_seconds.max(), num=nvalues_value),
             xp=time_in_seconds, fp=sensor_values)
-        pass
+        sensor_values = pd.Series(sensor_values_np, name=sensor_values.name)
 
     # Sensor measures
     for state, state_color in zip(["Air", "Too dry", "OK", "Too wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
