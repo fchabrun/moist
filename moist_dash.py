@@ -11,7 +11,6 @@ import time
 import json
 
 # TODO works only for 6 figures right now
-# TODO display as squares
 # TODO be able to name plants (sensors)
 
 parser = argparse.ArgumentParser()
@@ -108,9 +107,10 @@ def remap_value_by_state(val, state):
         if val <= LIMIT_WET:
             return val
         return np.nan
+    return np.nan
 
 
-def draw_main_grap(time, sensor_values, display_raw, smooth, fig_name):
+def draw_main_grap(time, sensor_values, smooth_alpha, nvalues_value, fig_name):
     if len(time) == 0:
         return None
     if not np.isfinite(sensor_values).any():
@@ -118,18 +118,22 @@ def draw_main_grap(time, sensor_values, display_raw, smooth, fig_name):
 
     fig = make_subplots()
 
-    if smooth:
-        sensor_values = sensor_values.ewm(span=12).mean()
+    if smooth_alpha < 1:
+        # smooth using the ewm method
+        sensor_values = sensor_values.ewm(alpha=smooth_alpha).mean()
+
+    if nvalues_value < len(sensor_values):
+        # to interpolate we first need to convert times to raw seconds
+        time_in_seconds = (time - time.max()) / timedelta(seconds=1)
+        sensor_values = np.interp(
+            x=np.linspace(time_in_seconds.min(), time_in_seconds.max(), num=nvalues_value),
+            xp=time_in_seconds, fp=sensor_values)
+        pass
 
     # Sensor measures
     for state, state_color in zip(["Air", "Too dry", "OK", "Too wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
         sensor_values_remapped = sensor_values.map(lambda val: remap_value_by_state(val, state=state))
         sensor_values_remapped[sensor_values_remapped.isna() & (~sensor_values_remapped.shift().isna())] = sensor_values[sensor_values_remapped.isna() & (~sensor_values_remapped.shift().isna())]
-        if not display_raw:
-            sensor_values_remapped = sensor_values_remapped.copy()
-            sensor_values_remapped[sensor_values_remapped > LIMIT_HIGH] = LIMIT_HIGH
-            sensor_values_remapped[sensor_values_remapped < LIMIT_LOW] = LIMIT_LOW
-            sensor_values_remapped = 100 * (LIMIT_HIGH - sensor_values_remapped) / (LIMIT_HIGH - LIMIT_LOW)
         fig.add_trace(
             go.Scatter(x=time, y=sensor_values_remapped, name=state, mode='lines', line=dict(width=1, color=state_color))
         )
@@ -138,8 +142,8 @@ def draw_main_grap(time, sensor_values, display_raw, smooth, fig_name):
     fig.update_xaxes(title_text="Time")
 
     # get first y axis range
-    upper_y_limit = max(sensor_values)
-    lower_y_limit = min(sensor_values)
+    # upper_y_limit = max(sensor_values)
+    # lower_y_limit = min(sensor_values)
 
     # Set y-axes titles
     # fig.update_yaxes(title_text="Humidity (raw)", range=(lower_y_limit, upper_y_limit))
@@ -162,9 +166,20 @@ content = html.Div(
                 html.P("Display last (min)", style={"display": "inline-block"}),
                 dcc.Input(min=1, max=10800, step=1, value=1440, id='display-length-slider', type="number",
                           style={"display": "inline-block"}),
-                dbc.Switch(id="raw-switch", label="Display raw values", value=True, style={"display": "inline-block"}),
-                dbc.Switch(id="smooth-switch", label="Smooth values", value=True, style={"display": "inline-block"}),
+                dcc.Slider(0, 4, 0.01,
+                    id='smooth-slider',
+                    marks={i: '{}'.format(10 ** (-i)) for i in range(5)},
+                    value=0,
+                    updatemode='drag'
+                ),
+                dcc.Slider(0, 4, 0.3,
+                    id='nvaluesdisplay-slider',
+                    marks={i: '{}'.format(10 ** i) for i in range(5)},
+                    value=2,
+                    updatemode='drag'
+                ),
                 html.Button('Refresh', id='refresh-button', style={"display": "inline-block"}, n_clicks=0),
+                html.Div(id='refresh-button-output'),
             ]),
             html.Hr(),
             html.Div([dcc.Graph(id='sensor_0')], style={'display': 'inline-block'}),
@@ -191,24 +206,37 @@ app.layout = html.Div(
     Output('sensor_3', 'figure'),
     Output('sensor_4', 'figure'),
     Output('sensor_5', 'figure'),
+    Output('refresh-button-output', 'children'),
     Input('display-length-slider', 'value'),
     Input('refresh-button', 'n_clicks'),
-    Input('raw-switch', 'value'),
-    Input('smooth-switch', 'value'),
+    Input('smooth-slider', 'value'),
+    Input('nvaluesdisplay-slider', 'value'),
 )
-def callback_update_from_db(param_minutes, n, raw_switch, smooth_switch):
+def callback_update_from_db(param_minutes, n, smooth_alpha, nvalues_value):
     # extract db
+    fetch_start = time.time()
+
     db_extract, sensor_columns = fetch_db(param_minutes)
     db_extract_entries = get_db_subset(db_extract=db_extract, events=["entry",])
     log(f"refreshing with {db_extract_entries.shape=}")
 
+    computes_start = time.time()
+
+    # translate values
+    smooth_alpha = 10 ** (-smooth_alpha)
+    nvalues_value = 10 ** nvalues_value
+
     # figs
-    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 1")
-    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 2")
-    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 3")
-    sensor_3_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[3]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 4")
-    sensor_4_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[4]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 5")
-    sensor_5_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[5]], display_raw=raw_switch, smooth=smooth_switch, fig_name="Sensor 6")
+    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 1")
+    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 2")
+    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 3")
+    sensor_3_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[3]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 4")
+    sensor_4_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[4]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 5")
+    sensor_5_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[5]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 6")
+
+    end_time = time.time()
+
+    times_output = f"fetched in {(end_time - computes_start):.3f} seconds, computed in {(computes_start - fetch_start):.3f} seconds"
 
     return (
         sensor_0_fig,
@@ -217,6 +245,7 @@ def callback_update_from_db(param_minutes, n, raw_switch, smooth_switch):
         sensor_3_fig,
         sensor_4_fig,
         sensor_5_fig,
+        times_output,
         )
 
 
