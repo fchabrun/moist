@@ -173,13 +173,13 @@ content = html.Div(
                 dcc.Slider(0, 4, 0.01,
                     id='smooth-slider',
                     marks={i: '{}'.format(10 ** (-i)) for i in range(5)},
-                    value=0,
+                    value=2,
                     updatemode='drag'
                 ),
-                dcc.Slider(0, 4, 0.3,
+                dcc.Slider(2, 4, 1,
                     id='nvaluesdisplay-slider',
-                    marks={i: '{}'.format(10 ** i) for i in range(5)},
-                    value=2,
+                    marks={i: '{}'.format(10 ** i) for i in range(2, 5)},
+                    value=3,
                     updatemode='drag'
                 ),
                 html.Button('Refresh', id='refresh-button', style={"display": "inline-block"}, n_clicks=0),
