@@ -3,7 +3,7 @@ import os
 import time
 import argparse
 import serial
-from datetime import datetime
+from datetime import datetime, timedelta
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mode")
@@ -106,10 +106,20 @@ def db_store_measurements(measurements):
     return False
 
 
+def db_clean(days_old_filter: int):
+    if args.db_platform == "mariadb":
+        dt_max_date_keep = (datetime.now() - timedelta(days=days_old_filter)).strftime('%Y-%m-%d %H:%M:%S')
+        query = f"DELETE FROM moist_measurements WHERE time < '{dt_max_date_keep}'"
+        return run_db_query_mariadb(query)
+    log(f"Unknown {args.db_platform=}")
+    return False
+
+
 # settings
 def default_params():
     params = {
-        "loop_delay_seconds": 10
+        "loop_delay_seconds": 60,
+        "auto_remove_older_than_days": 7
     }
     return params
 
@@ -209,3 +219,6 @@ if __name__ == "__main__":
             query_status = db_store_measurements(measurements)
             if not query_status:
                 log("unable to store measurements in database")
+
+             # clean old entries
+            db_clean(params["auto_remove_older_than_days"])
