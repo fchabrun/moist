@@ -211,12 +211,12 @@ app.layout = html.Div(
     Output('sensor_4', 'figure'),
     Output('sensor_5', 'figure'),
     Output('refresh-button-output', 'children'),
-    Input('display-length-slider', 'value'),
     Input('refresh-button', 'n_clicks'),
-    Input('smooth-slider', 'value'),
-    Input('nvaluesdisplay-slider', 'value'),
+    State ('display-length-slider', 'value'),
+    State ('smooth-slider', 'value'),
+    State ('nvaluesdisplay-slider', 'value'),
 )
-def callback_update_from_db(param_minutes, n, smooth_alpha, nvalues_value):
+def callback_update_from_db(n_clicks, param_minutes, smooth_alpha, nvalues_value):
     # extract db
     fetch_start = time.time()
 
