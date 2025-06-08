@@ -12,6 +12,7 @@ import json
 
 # TODO works only for 6 figures right now
 # TODO be able to name plants (sensors)
+# TODO there is a BUG because the number of time points does not match the number of sensor points now that we are restricting the number of points!!!
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--mode")
@@ -124,11 +125,14 @@ def draw_main_grap(time, sensor_values, smooth_alpha, nvalues_value, fig_name):
 
     if nvalues_value < len(sensor_values):
         # to interpolate we first need to convert times to raw seconds
-        time_in_seconds = (time - time.max()) / timedelta(seconds=1)
-        sensor_values_np = np.interp(
-            x=np.linspace(time_in_seconds.min(), time_in_seconds.max(), num=nvalues_value),
+        time_in_seconds = (time - time.min()) / timedelta(seconds=1)
+        new_time_in_seconds = np.linspace(time_in_seconds.min(), time_in_seconds.max(), num=nvalues_value)
+        new_sensor_values = np.interp(
+            x=new_time_in_seconds,
             xp=time_in_seconds, fp=sensor_values)
-        sensor_values = pd.Series(sensor_values_np, name=sensor_values.name)
+        sensor_values = pd.Series(new_sensor_values, name=sensor_values.name)
+        new_time_in_seconds = [time.min() + timedelta(seconds=new_t) for new_t in new_time_in_seconds]
+        time = pd.Series(new_time_in_seconds, name=time.name)
 
     # Sensor measures
     for state, state_color in zip(["Air", "Too dry", "OK", "Too wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
