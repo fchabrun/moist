@@ -168,7 +168,7 @@ content = html.Div(
         html.Div([
             html.Div([
                 html.P("Display last (min)", style={"display": "inline-block"}),
-                dcc.Input(min=1, max=10800, step=1, value=1440, id='display-length-slider', type="number",
+                dcc.Input(min=1, max=21600, step=1, value=10800, id='display-length-slider', type="number",
                           style={"display": "inline-block"}),
                 dcc.Slider(0, 4, 0.01,
                     id='smooth-slider',
