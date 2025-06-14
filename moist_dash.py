@@ -142,12 +142,20 @@ def draw_main_grap(time, sensor_values, smooth_alpha, nvalues_value, fig_name):
             go.Scatter(x=time, y=sensor_values_remapped, name=state, mode='lines', line=dict(width=1, color=state_color))
         )
 
+    # Area colors
+    for i, (state_value, state, state_color) in enumerate(zip([LIMIT_HIGH, LIMIT_AIR, LIMIT_DRY, LIMIT_WET, LIMIT_LOW],
+                                                              ["High", "Air", "Too dry", "OK", "Too wet"],
+                                                              ["#cccccc", "#cccccc", "#ff0000", "#00ff00", "#0000ff"])):
+        fig.add_trace(
+            go.Scatter(x=time, y=np.array([state_value, ] * len(time)), line=dict(width=0.5, color=state_color), fill=(None if i==0 else 'tonexty')),
+        )
+
     # Set x-axis title
     fig.update_xaxes(title_text="Time")
 
     # get first y axis range
-    upper_y_limit = max(LIMIT_HIGH, max(sensor_values))
-    lower_y_limit = min(LIMIT_LOW, min(sensor_values))
+    upper_y_limit = max(LIMIT_DRY, max(sensor_values))
+    lower_y_limit = min(LIMIT_WET, min(sensor_values))
 
     # Set y-axes titles
     fig.update_yaxes(title_text="Humidity (raw)", range=(lower_y_limit, upper_y_limit))
