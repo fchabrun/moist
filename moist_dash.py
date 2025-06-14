@@ -173,13 +173,13 @@ content = html.Div(
                 dcc.Slider(0, 4, 0.01,
                     id='smooth-slider',
                     marks={i: '{}'.format(10 ** (-i)) for i in range(5)},
-                    value=2,
+                    value=0,
                     updatemode='drag'
                 ),
                 dcc.Slider(2, 4, 1,
                     id='nvaluesdisplay-slider',
                     marks={i: '{}'.format(10 ** i) for i in range(2, 5)},
-                    value=3,
+                    value=4,
                     updatemode='drag'
                 ),
                 html.Button('Refresh', id='refresh-button', style={"display": "inline-block"}, n_clicks=0),
@@ -189,9 +189,9 @@ content = html.Div(
             html.Div([dcc.Graph(id='sensor_0')], style={'display': 'inline-block'}),
             html.Div([dcc.Graph(id='sensor_1')], style={'display': 'inline-block'}),
             html.Div([dcc.Graph(id='sensor_2')], style={'display': 'inline-block'}),
-            html.Div([dcc.Graph(id='sensor_3')], style={'display': 'inline-block'}),
-            html.Div([dcc.Graph(id='sensor_4')], style={'display': 'inline-block'}),
-            html.Div([dcc.Graph(id='sensor_5')], style={'display': 'inline-block'}),
+            # html.Div([dcc.Graph(id='sensor_3')], style={'display': 'inline-block'}),
+            # html.Div([dcc.Graph(id='sensor_4')], style={'display': 'inline-block'}),
+            # html.Div([dcc.Graph(id='sensor_5')], style={'display': 'inline-block'}),
         ], id='page-div', style={'width': '100%', 'display': 'block'}),
     ], id="page-content", style=CONTENT_STYLE
 )
@@ -231,12 +231,12 @@ def callback_update_from_db(n_clicks, param_minutes, smooth_alpha, nvalues_value
     nvalues_value = 10 ** nvalues_value
 
     # figs
-    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 1")
-    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 2")
-    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 3")
-    sensor_3_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[3]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 4")
-    sensor_4_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[4]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 5")
-    sensor_5_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[5]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 6")
+    sensor_0_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[0]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Boston Fern")
+    sensor_1_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[1]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Palm tree")
+    sensor_2_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[2]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Lutheria")
+    # sensor_3_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[3]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 4")
+    # sensor_4_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[4]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 5")
+    # sensor_5_fig = draw_main_grap(time=db_extract_entries.time, sensor_values=db_extract_entries[sensor_columns[5]], smooth_alpha=smooth_alpha, nvalues_value=nvalues_value, fig_name="Sensor 6")
 
     end_time = time.time()
 
@@ -246,9 +246,9 @@ def callback_update_from_db(n_clicks, param_minutes, smooth_alpha, nvalues_value
         sensor_0_fig,
         sensor_1_fig,
         sensor_2_fig,
-        sensor_3_fig,
-        sensor_4_fig,
-        sensor_5_fig,
+        # sensor_3_fig,
+        # sensor_4_fig,
+        # sensor_5_fig,
         times_output,
         )
 
