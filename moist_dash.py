@@ -135,20 +135,24 @@ def draw_main_grap(time, sensor_values, smooth_alpha, nvalues_value, fig_name):
         time = pd.Series(new_time_in_seconds, name=time.name)
 
     # Sensor measures
-    for state, state_color in zip(["Air", "Too dry", "OK", "Too wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
-        sensor_values_remapped = sensor_values.map(lambda val: remap_value_by_state(val, state=state))
-        sensor_values_remapped[sensor_values_remapped.isna() & (~sensor_values_remapped.shift().isna())] = sensor_values[sensor_values_remapped.isna() & (~sensor_values_remapped.shift().isna())]
-        fig.add_trace(
-            go.Scatter(x=time, y=sensor_values_remapped, name=state, mode='lines', line=dict(width=1, color=state_color))
-        )
+    # for state, state_color in zip(["Air", "Too dry", "OK", "Too wet"], ["#cccccc", "#ff0000", "#00ff00", "#0000ff"]):
+    #     sensor_values_remapped = sensor_values.map(lambda val: remap_value_by_state(val, state=state))
+    #     sensor_values_remapped[sensor_values_remapped.isna() & (~sensor_values_remapped.shift().isna())] = sensor_values[sensor_values_remapped.isna() & (~sensor_values_remapped.shift().isna())]
+    #     fig.add_trace(
+    #         go.Scatter(x=time, y=sensor_values_remapped, name=state, mode='lines', line=dict(width=1, color=state_color))
+    #     )
 
     # Area colors
     for i, (state_value, state, state_color) in enumerate(zip([LIMIT_HIGH, LIMIT_AIR, LIMIT_DRY, LIMIT_WET, LIMIT_LOW],
                                                               ["High", "Air", "Too dry", "OK", "Too wet"],
                                                               ["#cccccc", "#cccccc", "#ff0000", "#00ff00", "#0000ff"])):
         fig.add_trace(
-            go.Scatter(x=time, y=np.array([state_value, ] * len(time)), line=dict(width=0.5, color=state_color), fill=(None if i==0 else 'tonexty')),
+            go.Scatter(x=time, y=np.array([state_value, ] * len(time)), name=state, line=dict(width=0.5, color=state_color), fill=(None if i==0 else 'tonexty')),
         )
+
+    fig.add_trace(
+        go.Scatter(x=time, y=sensor_values, mode='lines', line=dict(width=1.5, color="#000000"))
+    )
 
     # Set x-axis title
     fig.update_xaxes(title_text="Time")
