@@ -179,7 +179,7 @@ content = html.Div(
                 dcc.Slider(2, 4, 1,
                     id='nvaluesdisplay-slider',
                     marks={i: '{}'.format(10 ** i) for i in range(2, 5)},
-                    value=4,
+                    value=3,
                     updatemode='drag'
                 ),
                 html.Button('Refresh', id='refresh-button', style={"display": "inline-block"}, n_clicks=0),
