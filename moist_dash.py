@@ -143,9 +143,9 @@ def draw_main_grap(time, sensor_values, smooth_alpha, nvalues_value, fig_name):
     #     )
 
     # Area colors
-    for i, (state_value, state, state_color) in enumerate(zip([LIMIT_HIGH, LIMIT_AIR, LIMIT_DRY, LIMIT_WET, LIMIT_LOW],
-                                                              ["High", "Air", "Too dry", "OK", "Too wet"],
-                                                              ["#cccccc", "#cccccc", "#ff0000", "#00ff00", "#0000ff"])):
+    for i, (state_value, state, state_color) in enumerate(zip([LIMIT_HIGH, LIMIT_AIR, LIMIT_DRY, LIMIT_WET, LIMIT_LOW, 0],
+                                                              ["High", "Air", "Too dry", "OK", "Too wet", "Water"],
+                                                              ["#cccccc", "#cccccc", "#ff0000", "#00ff00", "#0000ff", "#cccccc"])):
         fig.add_trace(
             go.Scatter(x=time, y=np.array([state_value, ] * len(time)), name=state, line=dict(width=0.5, color=state_color), fill=(None if i==0 else 'tonexty')),
         )
@@ -158,7 +158,7 @@ def draw_main_grap(time, sensor_values, smooth_alpha, nvalues_value, fig_name):
     fig.update_xaxes(title_text="Time")
 
     # get first y axis range
-    upper_y_limit = max(LIMIT_DRY, max(sensor_values))
+    upper_y_limit = max(LIMIT_AIR, max(sensor_values))
     lower_y_limit = min(LIMIT_WET, min(sensor_values))
 
     # Set y-axes titles
@@ -179,16 +179,18 @@ content = html.Div(
     [
         html.Div([
             html.Div([
-                html.P("Display last (min)", style={"display": "inline-block"}),
+                html.P("Display last (min) ", style={"display": "inline-block"}),
                 dcc.Input(min=1, max=21600, step=1, value=10800, id='display-length-slider', type="number",
                           style={"display": "inline-block"}),
+                html.P("Smoothing:"),
                 dcc.Slider(0, 4, 0.01,
                     id='smooth-slider',
                     marks={i: '{}'.format(10 ** (-i)) for i in range(5)},
-                    value=0,
+                    value=1,
                     updatemode='drag'
                 ),
-                dcc.Slider(2, 4, 1,
+                html.P("Number of points:"),
+                dcc.Slider(2, 4, .25,
                     id='nvaluesdisplay-slider',
                     marks={i: '{}'.format(10 ** i) for i in range(2, 5)},
                     value=3,
@@ -252,7 +254,7 @@ def callback_update_from_db(n_clicks, param_minutes, smooth_alpha, nvalues_value
 
     end_time = time.time()
 
-    times_output = f"fetched in {(end_time - computes_start):.3f} seconds, computed in {(computes_start - fetch_start):.3f} seconds"
+    times_output = f"fetched {len(db_extract_entries):.0f} values in {(end_time - computes_start):.3f} seconds, computed in {(computes_start - fetch_start):.3f} seconds"
 
     return (
         sensor_0_fig,
